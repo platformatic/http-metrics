@@ -210,3 +210,51 @@ test('should ignore some methods and urls', async (t) => {
     assert.strictEqual(all2sMetrics.length, 0)
   }
 })
+
+test('should ignore route with a callback', async (t) => {
+  const serverUrl = createHttpServer(t)
+
+  const registry = new Registry()
+  httpMetrics(registry, {
+    ignore: (req) => req.headers['x-ignore'] === 'true',
+  })
+
+  await Promise.all([
+    request(serverUrl + '/1s', {
+      method: 'GET',
+      headers: { 'x-ignore': 'true' },
+    }),
+    request(serverUrl + '/1s', {
+      method: 'POST',
+      headers: { 'x-ignore': 'false' },
+    }),
+  ])
+
+  const metrics = await registry.getMetricsAsJSON()
+  assert.strictEqual(metrics.length, 2)
+
+  const histogramMetric = metrics.find(
+    (metric) => metric.name === 'http_request_duration_seconds'
+  )
+
+  const histogramValues = histogramMetric.values
+
+  {
+    const ignoredMetrics = histogramValues.filter(
+      ({ labels }) => labels.method === 'GET'
+    )
+    assert.strictEqual(ignoredMetrics.length, 0)
+  }
+
+  {
+    const notIgnoredMetrics = histogramValues.filter(
+      ({ labels }) => labels.method === 'POST'
+    )
+    assert.strictEqual(notIgnoredMetrics.length, 14)
+
+    for (const { labels } of notIgnoredMetrics) {
+      assert.strictEqual(labels.method, 'POST')
+      assert.strictEqual(labels.status_code, 200)
+    }
+  }
+})

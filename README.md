@@ -42,10 +42,11 @@ server.listen(0, () => {
 - __`registry`__ `<Registry>` The prom-client registry to use for collecting metrics.
 - __`options`__ `<object>` Options for configuring the metrics collection.
   - __`customLabels`__ `<array>` A list of custom labels names to add to the metrics.
-  - __`getCustomLabels(req, res)`__ `<function>` A function that returns an object of custom labels to add to the metrics. The function receives the request object as a first argument and a response object as a second argument.
+  - __`getCustomLabels(req, res, server)`__ `<function>` A function that returns an object of custom labels to add to the metrics. The function receives the request object as a first argument and a response object as a second argument.
   - __`ignoreMethods`__ `<array>` A list of HTTP methods to ignore when collecting metrics. Default: `['OPTIONS', 'HEAD', 'CONNECT', 'TRACE']`.
   - __`ignoreUrls`__ `<array>` A list of URLs strings and regexps to ignore when collecting metrics. Default: `[]`.
-  - __`ignore(req, res)`__ `<function>` A function that returns a boolean indicating whether to ignore the request when collecting metrics. The function receives the request object as a first argument and a response object as a second argument.
+  - __`ignore(req, res, server)`__ `<function>` A function that returns a boolean indicating whether to ignore the request when collecting metrics. The function receives the request object as a first argument and a response object as a second argument.
+  - __`ports`__ `<array>` By default the http metrics are collected for all defined http servers. If you want to collect metrics only for specific http servers, you can provide an array of ports to collect metrics for.
   - __`histogram`__ `<object>` prom-client [histogram options](https://github.com/siimon/prom-client?tab=readme-ov-file#histogram). Use it if you want to customize the histogram.
   - __`summary`__ `<object>` prom-client [summary options](https://github.com/siimon/prom-client?tab=readme-ov-file#summary). Use it if you want to customize the summary.
 

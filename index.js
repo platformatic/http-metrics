@@ -20,6 +20,8 @@ module.exports = (registry, config = {}) => {
   const ignoreUrlsStrings = []
   const ignoreUrlsRegexps = []
 
+  const ports = (config.ports || []).map((port) => parseInt(port, 10))
+
   for (const url of ignoreUrls) {
     if (url instanceof RegExp) {
       ignoreUrlsRegexps.push(url)
@@ -28,9 +30,14 @@ module.exports = (registry, config = {}) => {
     }
   }
 
-  function ignoreRoute (request) {
+  function ignoreRoute (request, server) {
     if (ignoreMethods.includes(request.method)) return true
     if (ignoreUrlsStrings.includes(request.url)) return true
+
+    if (ports.length > 0) {
+      const port = server.address().port
+      if (!ports.includes(port)) return true
+    }
 
     for (const url of ignoreUrlsRegexps) {
       if (url.test(request.url)) return true
@@ -58,9 +65,9 @@ module.exports = (registry, config = {}) => {
   const timers = new WeakMap()
 
   diagnosticChannel.subscribe('http.server.request.start', (event) => {
-    const { request } = event
+    const { request, server } = event
 
-    if (ignoreRoute(request)) return
+    if (ignoreRoute(request, server)) return
 
     const summaryTimer = summary.startTimer()
     const histogramTimer = histogram.startTimer()
@@ -69,19 +76,19 @@ module.exports = (registry, config = {}) => {
   })
 
   diagnosticChannel.subscribe('http.server.response.finish', (event) => {
-    const { request, response } = event
+    const { request, response, server } = event
 
-    if (ignoreRoute(request)) return
+    if (ignoreRoute(request, server)) return
 
     const { summaryTimer, histogramTimer } = timers.get(request)
     timers.delete(request)
 
-    if (ignore(request, response)) return
+    if (ignore(request, response, server)) return
 
     const labels = {
       method: request.method,
       status_code: response.statusCode,
-      ...getCustomLabels(request, response),
+      ...getCustomLabels(request, response, server),
     }
 
     if (summaryTimer) summaryTimer(labels)
