@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "pnpm run lint && borp",
+    "test": "npm run lint && borp",
     "lint": "eslint"
   },
   "author": "Ivan Tymoshenko <ivan@tymoshenko.me>",
