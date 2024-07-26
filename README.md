@@ -52,5 +52,5 @@ server.listen(0, () => {
 
 ## License
 
-MIT
+Apache-2.0
 
