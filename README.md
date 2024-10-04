@@ -50,7 +50,14 @@ server.listen(0, () => {
   - __`histogram`__ `<object>` prom-client [histogram options](https://github.com/siimon/prom-client?tab=readme-ov-file#histogram). Use it if you want to customize the histogram.
   - __`summary`__ `<object>` prom-client [summary options](https://github.com/siimon/prom-client?tab=readme-ov-file#summary). Use it if you want to customize the summary.
 
+Returns:
+
+- __`histogram`__ `<Histogram>` The histogram metric for measuring request duration.
+- __`summary`__ `<Summary>` The summary metric for measuring request duration.
+- __`startTimer({ request, <server> })`__ `<function>` A function that starts a timer for measuring request duration.
+The function can be used to add custom measurements that are not collected by diagnostic channel.
+- __`endTimer({ request, response, <server> })` `<function>` A function that ends a timer for custom request duration measurement.
+
 ## License
 
 Apache-2.0
-

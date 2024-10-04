@@ -64,8 +64,8 @@ module.exports = (registry, config = {}) => {
 
   const timers = new WeakMap()
 
-  diagnosticChannel.subscribe('http.server.request.start', (event) => {
-    const { request, server } = event
+  function startTimer (options) {
+    const { request, server } = options
 
     if (ignoreRoute(request, server)) return
 
@@ -73,10 +73,10 @@ module.exports = (registry, config = {}) => {
     const histogramTimer = histogram.startTimer()
 
     timers.set(request, { summaryTimer, histogramTimer })
-  })
+  }
 
-  diagnosticChannel.subscribe('http.server.response.finish', (event) => {
-    const { request, response, server } = event
+  function endTimer (options) {
+    const { request, response, server } = options
 
     if (ignoreRoute(request, server)) return
 
@@ -93,5 +93,10 @@ module.exports = (registry, config = {}) => {
 
     if (summaryTimer) summaryTimer(labels)
     if (histogramTimer) histogramTimer(labels)
-  })
+  }
+
+  diagnosticChannel.subscribe('http.server.request.start', event => startTimer(event))
+  diagnosticChannel.subscribe('http.server.response.finish', event => endTimer(event))
+
+  return { summary, histogram, startTimer, endTimer }
 }
