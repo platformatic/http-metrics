@@ -54,9 +54,9 @@ Returns:
 
 - __`histogram`__ `<Histogram>` The histogram metric for measuring request duration.
 - __`summary`__ `<Summary>` The summary metric for measuring request duration.
-- __`startTimer({ request, <server> })`__ `<function>` A function that starts a timer for measuring request duration.
+- __`startTimer({ request, [server] })`__ `<function>` A function that starts a timer for measuring request duration.
 The function can be used to add custom measurements that are not collected by diagnostic channel.
-- __`endTimer({ request, response, <server> })` `<function>` A function that ends a timer for custom request duration measurement.
+- __`endTimer({ request, response, [server] })` `<function>` A function that ends a timer for custom request duration measurement.
 
 ## License
 
