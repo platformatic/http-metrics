@@ -15,6 +15,9 @@ function createHttpServer (t) {
       if (req.url === '/2s') {
         await sleep(2000)
       }
+      if (req.url === '/10s') {
+        await sleep(10000)
+      }
       res.end('Hello World\n')
     }
   )
