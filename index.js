@@ -80,7 +80,10 @@ module.exports = (registry, config = {}) => {
 
     if (ignoreRoute(request, server)) return
 
-    const { summaryTimer, histogramTimer } = timers.get(request)
+    const requestTimers = timers.get(request)
+    if (!requestTimers) return
+
+    const { summaryTimer, histogramTimer } = requestTimers
     timers.delete(request)
 
     if (ignore(request, response, server)) return
