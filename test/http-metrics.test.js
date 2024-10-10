@@ -2,6 +2,7 @@
 
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
+const { setTimeout: sleep } = require('node:timers/promises')
 const { request } = require('undici')
 const { Registry } = require('prom-client')
 const httpMetrics = require('../index.js')
@@ -257,4 +258,33 @@ test('should ignore route with a callback', async (t) => {
       assert.strictEqual(labels.status_code, 200)
     }
   }
+})
+
+test('should not throw if request timers are not found', async (t) => {
+  const serverUrl = createHttpServer(t)
+
+  const responsePromise = request(serverUrl + '/10s', {
+    method: 'GET',
+    headers: { 'x-ignore': 'true' },
+  })
+
+  // Wait for server to receive the request
+  await sleep(500)
+
+  const registry = new Registry()
+  httpMetrics(registry, {
+    ignore: (req) => req.headers['x-ignore'] === 'true',
+  })
+
+  await responsePromise
+
+  const metrics = await registry.getMetricsAsJSON()
+  assert.strictEqual(metrics.length, 2)
+
+  const histogramMetric = metrics.find(
+    (metric) => metric.name === 'http_request_duration_seconds'
+  )
+
+  const histogramValues = histogramMetric.values
+  assert.strictEqual(histogramValues.length, 0)
 })
