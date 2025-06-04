@@ -37,7 +37,7 @@ test('should calculate the http inject request duration histogram', async (t) =>
   )
   assert.strictEqual(histogramMetric.name, 'http_request_duration_seconds')
   assert.strictEqual(histogramMetric.type, 'histogram')
-  assert.strictEqual(histogramMetric.help, 'request duration in seconds histogram for all requests')
+  assert.strictEqual(histogramMetric.help, 'request duration in seconds histogram')
   assert.strictEqual(histogramMetric.aggregator, 'sum')
 
   const histogramValues = histogramMetric.values
@@ -87,7 +87,7 @@ test('should calculate the http inject request duration histogram', async (t) =>
   )
   assert.strictEqual(summaryMetric.name, 'http_request_summary_seconds')
   assert.strictEqual(summaryMetric.type, 'summary')
-  assert.strictEqual(summaryMetric.help, 'request duration in seconds summary for all requests')
+  assert.strictEqual(summaryMetric.help, 'request duration in seconds summary')
   assert.strictEqual(summaryMetric.aggregator, 'sum')
 
   const summaryValues = summaryMetric.values

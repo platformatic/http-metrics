@@ -3,7 +3,7 @@
 const { Histogram, Summary } = require('prom-client')
 const diagnosticChannel = require('node:diagnostics_channel')
 
-const defaultLabels = ['method', 'status_code']
+const defaultLabels = ['method', 'route', 'status_code']
 const defaultIgnoreMethods = ['HEAD', 'OPTIONS', 'TRACE', 'CONNECT']
 
 module.exports = (registry, config = {}) => {
@@ -16,6 +16,7 @@ module.exports = (registry, config = {}) => {
   const ignoreMethods = config.ignoreMethods || defaultIgnoreMethods
   const ignoreUrls = config.ignoreUrls || []
   const ignore = config.ignore || (() => false)
+  const zeroFill = config.zeroFill || false
 
   const ignoreUrlsStrings = []
   const ignoreUrlsRegexps = []
@@ -48,19 +49,27 @@ module.exports = (registry, config = {}) => {
 
   const summary = new Summary({
     name: 'http_request_summary_seconds',
-    help: 'request duration in seconds summary for all requests',
+    help: 'request duration in seconds summary',
     labelNames,
     registers,
     ...config.summary,
   })
 
+  if (zeroFill) {
+    summary.observe({ method: 'GET', route: '/__empty_metrics', status_code: 404 }, 0)
+  }
+
   const histogram = new Histogram({
     name: 'http_request_duration_seconds',
-    help: 'request duration in seconds histogram for all requests',
+    help: 'request duration in seconds histogram',
     labelNames,
     registers,
     ...config.histogram,
   })
+
+  if (zeroFill) {
+    histogram.zero({ method: 'GET', route: '/__empty_metrics', status_code: 404 })
+  }
 
   const timers = new WeakMap()
 
