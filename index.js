@@ -3,7 +3,7 @@
 const { Histogram, Summary } = require('prom-client')
 const diagnosticChannel = require('node:diagnostics_channel')
 
-const defaultLabels = ['method', 'route', 'status_code']
+const defaultLabels = ['method', 'status_code']
 const defaultIgnoreMethods = ['HEAD', 'OPTIONS', 'TRACE', 'CONNECT']
 
 module.exports = (registry, config = {}) => {
@@ -56,7 +56,7 @@ module.exports = (registry, config = {}) => {
   })
 
   if (zeroFill) {
-    summary.observe({ method: 'GET', route: '/__empty_metrics', status_code: 404 }, 0)
+    summary.observe({ method: 'GET', status_code: 404 }, 0)
   }
 
   const histogram = new Histogram({
@@ -68,7 +68,7 @@ module.exports = (registry, config = {}) => {
   })
 
   if (zeroFill) {
-    histogram.zero({ method: 'GET', route: '/__empty_metrics', status_code: 404 })
+    histogram.zero({ method: 'GET', status_code: 404 })
   }
 
   const timers = new WeakMap()
