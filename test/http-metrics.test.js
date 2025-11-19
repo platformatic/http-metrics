@@ -4,7 +4,7 @@ const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const { setTimeout: sleep } = require('node:timers/promises')
 const { request } = require('undici')
-const { Registry } = require('prom-client')
+const { Registry } = require('@platformatic/prom-client')
 const httpMetrics = require('../index.js')
 const { createHttpServer, calculateEpsilon } = require('./helper.js')
 

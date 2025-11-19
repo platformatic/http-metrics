@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
 const { request } = require('undici')
-const { Registry } = require('prom-client')
+const { Registry } = require('@platformatic/prom-client')
 const httpMetrics = require('../index.js')
 const { createHttpServer } = require('./helper.js')
 

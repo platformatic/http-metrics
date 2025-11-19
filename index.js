@@ -1,6 +1,6 @@
 'use strict'
 
-const { Histogram, Summary } = require('prom-client')
+const { Histogram, Summary } = require('@platformatic/prom-client')
 const diagnosticChannel = require('node:diagnostics_channel')
 
 const defaultLabels = ['method', 'status_code']
